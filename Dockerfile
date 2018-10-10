@@ -18,4 +18,4 @@ VOLUME /config
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "-c", "/opt/vrs/start.sh"]
+ENTRYPOINT ["/bin/bash", "/opt/vrs/start.sh"]
