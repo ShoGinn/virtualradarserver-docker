@@ -2,12 +2,13 @@ FROM mono:latest
 
 WORKDIR /opt/vrs
 
-RUN mkdir -p /opt/vrs \
+RUN \
+	mkdir -p /opt/vrs \
 	&& mkdir -p /config \
-    && mkdir -p /root/.local/share \
-    && ln -sf /config /root/.local/share/VirtualRadar
+	&& mkdir -p /root/.local/share \
+	&& ln -sf /config /root/.local/share/VirtualRadar
 
-COPY ./start.sh /opt/vrs
+COPY ./start.sh start.sh
 
 ADD ./logos.tar.gz /opt/vrs/Flags
 
@@ -17,4 +18,4 @@ VOLUME /config
 
 EXPOSE 8080
 
-CMD ["/bin/bash", "/opt/vrs/start.sh"]
+ENTRYPOINT ["/bin/bash", "-c", "/opt/vrs/start.sh"]
