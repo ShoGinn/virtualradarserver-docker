@@ -8,7 +8,7 @@ RUN \
 	&& mkdir -p /root/.local/share \
 	&& ln -sf /config /root/.local/share/VirtualRadar
 
-COPY ./start.sh /opt/vrs/start.sh
+COPY vrs-runner.sh /usr/local/bin/vrs-runner
 
 ADD ./logos.tar.gz /opt/vrs/Flags
 
