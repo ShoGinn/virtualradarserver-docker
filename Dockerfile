@@ -18,4 +18,6 @@ VOLUME /config
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/bash", "/opt/vrs/start.sh"]
+HEALTHCHECK --start-period=1m --interval=30s --timeout=5s --retries=3 CMD curl --fail http://localhost:8080/VirtualRadar/ || exit 1
+
+ENTRYPOINT ["vrs-runner"]
