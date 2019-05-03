@@ -1,0 +1,63 @@
+dist: xenial
+group: travis_latest
+
+if: |
+  branch = master AND ! commit_message =~ /README.md/ AND ! commit_message =~ /docker-compose.yml/
+  OR type = cron
+
+language: bash
+sudo: required
+
+services:
+  - docker
+
+env:
+  global:
+    - BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    - BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}"
+    - DOCKER_DESCRIPTION="Virtual Radar Server Container"
+    - DOCKER_MAINTAINER="shoginn"
+    - DOCKER_NAME="vrs"
+    - DOCKER_URL="https://shoginn.github.io"
+    - SCHEMA_VERSION="1.0"
+    - VCS_REF="$(git rev-parse --short HEAD)"
+    - VCS_URL="$(git remote get-url origin | head -c-5)"
+
+  matrix:
+    - DOCKER_TAG="latest"
+
+before_install:
+  - sudo /sbin/sysctl -w net.ipv4.conf.all.forwarding=1
+  - mkdir -p ./travis
+  - curl -ksSl -o ./travis/docker.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/docker.sh"
+  - sudo bash travis/docker.sh
+  - sudo docker version
+
+install:
+  - sudo docker run --privileged linuxkit/binfmt:v0.7
+  - sudo docker run --privileged -d -p 1234:1234 --name buildkit moby/buildkit:latest --addr tcp://0.0.0.0:1234 --oci-worker-platform linux/arm --oci-worker-platform linux/armhf --oci-worker-platform linux/arm64 --oci-worker-platform linux/amd64
+  - sudo docker cp buildkit:/usr/bin/buildctl /usr/bin/
+  - export BUILDKIT_HOST=tcp://0.0.0.0:1234
+
+before_script:
+  - sed -i -e '/^$/d' -e 's/^[ \t]*//' -e '/^#/d' dockerfiles/*
+  - chmod 0544 rootfs/usr/local/bin/docker_entrypoint.sh
+  - curl -ksSl -o ./travis/build.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/build.sh"
+  - curl -ksSl -o ./travis/deploy.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/deploy.sh"
+
+script:
+  - sudo bash travis/build.sh
+
+deploy:
+  provider: script
+  script: sudo bash travis/deploy.sh
+  skip_cleanup: true
+  on:
+    branch: master
+
+after_success:
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change

@@ -1,0 +1,7 @@
+.*
+*.md
+dockerfiles*
+*.dockerfile
+travis*
+LICENSE
+*.tar.gz
