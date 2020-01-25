@@ -1,7 +1,13 @@
 os: linux
 dist: xenial
 group: travis_latest
-
+addons:
+  apt:
+    packages:
+      - docker-ce
+    sources:
+      - sourceline: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable test'
+        key_url: 'https://download.docker.com/linux/ubuntu/gpg'
 if: |
   branch = master AND ! commit_message =~ /README.md/ AND ! commit_message =~ /docker-compose.yml/
   OR type = cron
@@ -26,18 +32,19 @@ env:
   jobs:
     - DOCKER_TAG="latest"
 
-before_install:
+install:
   - sudo /sbin/sysctl -w net.ipv4.conf.all.forwarding=1
   - mkdir -p ./travis
-  - curl -ksSl -o ./travis/docker.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/docker.sh"
-  - sudo bash travis/docker.sh
+  - curl -ksSl -o ./travis/enable-experimental-docker.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/enable-experimental-docker.sh"
+  - curl -ksSl -o ./travis/build.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/build.sh"
+  - curl -ksSl -o ./travis/deploy.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/deploy.sh"
+  - sudo bash travis/enable-experimental-docker.sh
   - sudo docker version
 
 before_script:
   - sed -i -e '/^$/d' -e 's/^[ \t]*//' -e '/^#/d' dockerfiles/*
   - chmod 0544 rootfs/usr/local/bin/docker_entrypoint.sh
-  - curl -ksSl -o ./travis/build.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/build.sh"
-  - curl -ksSl -o ./travis/deploy.sh "https://raw.githubusercontent.com/ShoGinn/docker-builds/master/travis/deploy.sh"
+
 
 script:
   - sudo bash travis/build.sh
