@@ -1,4 +1,4 @@
-FROM mono:6.6.0
+FROM mono:6.0
 
 WORKDIR /opt/vrs
 
