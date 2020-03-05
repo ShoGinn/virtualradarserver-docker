@@ -48,15 +48,11 @@ notifications:
     on_success: never
     on_failure: change
 
-# Repo Specific
-
 env:
   global:
-    - BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    - BUILD_NUMBER="${TRAVIS_BUILD_NUMBER}"
-    - DOCKER_DESCRIPTION="Virtual Radar Server Container"
-    - DOCKER_MAINTAINER="shoginn"
-    - DOCKER_NAME="vrs"
+ARCHITECTURES='linux/arm/v7'
+DOCKER_DESCRIPTION="Docker container for ADS-B - This is the radarbox24.com component"
+DOCKER_NAME="radarbox24"
     - DOCKER_URL="https://shoginn.github.io"
     - SCHEMA_VERSION="1.0"
     - VCS_REF="$(git rev-parse --short HEAD)"
