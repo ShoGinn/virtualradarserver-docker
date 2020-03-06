@@ -3,10 +3,10 @@ FROM mono:6.0
 WORKDIR /opt/vrs
 
 RUN \
-	mkdir -p /opt/vrs \
-	&& mkdir -p /config \
-	&& mkdir -p /root/.local/share \
-	&& ln -sf /config /root/.local/share/VirtualRadar
+    mkdir -p /opt/vrs \
+    && mkdir -p /config \
+    && mkdir -p /root/.local/share \
+    && ln -sf /config /root/.local/share/VirtualRadar
 
 COPY rootfs /
 
